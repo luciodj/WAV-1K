@@ -4,7 +4,7 @@
 #include "main.inc"
 #include "serial.inc"
 
-    GLOBAL  SD_MEDIAinit, SD_SECTORread, LBAHH, LBAHL, LBAH, LBA
+    GLOBAL  SD_MEDIAinit, SD_SECTORread, LBA
 
 ; SD card commands
 #define CMD_RESET		        0 ; a.k.a. GO_IDLE (CMD0)
@@ -22,10 +22,7 @@
 #define DATA_ACCEPT	    0x05
 
     UDATA_SHR 0x70
-LBA     res 1
-LBAH    res 1
-LBAHL   res 1
-LBAHH   res 1
+LBA     res 3
 count   res 1
 count9  res 1
 countH  res 1
@@ -85,11 +82,11 @@ SD_CMDsend
     iorlw   0x40    ; add frame bit
     call    SPI_write
     ; 2. send the address : LBA * 512 (LBA << 9)
-    rlf	    LBAH,W
-    rlf	    LBAHL,W
+    rlf	    LBA+1,W
+    rlf	    LBA+2,W
     call    SPI_write
     rlf	    LBA,W
-    rlf	    LBAH,W
+    rlf	    LBA+1,W
     call    SPI_write
     CLRC
     rlf	    LBA,W
@@ -147,9 +144,8 @@ SD_MEDIAinitL1
     ; 3. now select the card
     SD_Enable
     ; 4. send a Reset command to enter SPI mode
-    clrf    LBAHH
-    clrf    LBAHL
-    clrf    LBAH
+    clrf    LBA+2
+    clrf    LBA+1
     clrf    LBA
     movlw   CMD_RESET
     call    SD_CMDsend
@@ -162,9 +158,9 @@ SD_MEDIAinitL1
     ; 5. send repeatedly INIT
 SD_MEDIA5
     SPI_read
-    movlw   HIGH(.10000)+1
+    movlw   HIGH(.1000)+1
     movwf   countH
-    movlw   LOW(.10000)
+    movlw   LOW(.1000)
     movwf   count
 
 SD_MEDIAinitL2
