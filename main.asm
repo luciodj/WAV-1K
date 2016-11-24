@@ -8,7 +8,7 @@
 #include "pwm.inc"
 #include "SDMMC.inc"
 
-buffer	equ 0x2050
+#define buffer	0x2100
 
 .main	udata 0x20
 temp	    res	    1
@@ -65,8 +65,8 @@ IO_init
     goto    PWM_init
 
 ;---------------------------------------------------------------
-szInit	dt  " Init SD-MEDIA",0
-szRead	dt  " Read",0
+szInit	dt  "Init SD-MEDIA: ",0
+szRead	dt  "Read: ",0
 
 main
 	call SYSTEM_init
@@ -76,30 +76,29 @@ mainL
 	movlw   .50	    ; 500 ms delay
 	call    delay_10ms
 
+    LFSR1   szInit
     call    SD_MEDIAinit
     banksel temp
     movwf   temp
-    call    putHex
-    LFSR1   szInit
-    call    puts
-
+    call    printf
     banksel temp
     movf    temp,W
     bnz     mainL
 
 init_success
+    LFSR1   szRead
     LFSR0   buffer
-    LLBA    0x0
+    LLBA    .0
     call    SD_SECTORread
     banksel temp
     movwf   temp
-    call    putHex
-    LFSR1   szRead
-    call    puts
+    call    printf
 
-    banksel temp
-    movf    temp,W
-    bnz     mainL
+    LFSR0   buffer
+    movlw   .32
+    call    dump
+
+;    goto     mainL
 
 stop
 	goto    stop

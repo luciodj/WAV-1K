@@ -2,16 +2,19 @@
 ; serial port
 ;
 #include "main.inc"
-    
-    GLOBAL serial_init, getch, putch, putsz, puts, putHex
+
+    GLOBAL serial_init, getch, putch, putsz, puts,
+    GLOBAL putHex, printf, putNL, dump
 
 serial_data    IDATA
 _HexTemp    res	    1
 _HexTemp2   res	    1
-	
-  
+_HexCount   res     1
+_HexRows    res     1
+
+
 serial    CODE
-    
+
 serial_init
 ; init 9600 baud @32MHz
     banksel BAUD1CON
@@ -21,7 +24,7 @@ serial_init
     set_sfr SP1BRGL, 0x40
     set_sfr SP1BRGH, 0x03
     retlw   1
-    
+
 getch
 ; output W = received data
     banksel PIR3
@@ -31,38 +34,38 @@ getch
     if_flag RC1STA,OERR, otherwise, +3
 	bcf RC1STA,SPEN
 	bsf RC1STA,SPEN
-   
+
     movf    RC1REG,W
-    banksel 0
     return
 
-putch    
+putch
 ; input W = data to transmit
     banksel PIR3
     wait_until PIR3,TXIF
-    
+
     banksel TX1REG
     movwf   TX1REG
-    banksel 0
-    retlw   0
-    
+    banksel _HexTemp
+    return
+
 putsz
 ; input FSR1 = points to zero terminated ascii string
-;     
+;
     moviw   FSR1++
     btfsc   STATUS,Z
     return
     call    putch
     goto    putsz
 
-    
+
 puts
     call    putsz
+putNL
     movlw   0x0D
     call    putch
     movlw   0x0A
     goto    putch
-    
+
 putHex
     banksel _HexTemp
     movwf    _HexTemp
@@ -76,7 +79,6 @@ putHex
     bnc	    $+2
     addlw   7
     call    putch
-    banksel _HexTemp
     movf    _HexTemp,W
     andlw   0xf
     addlw   0x30
@@ -87,7 +89,40 @@ putHex
     bnc	    $+2
     addlw   7
     goto    putch
-    
-    
+
+printf
+    banksel _HexTemp
+    movwf   _HexTemp
+    call    putsz
+    movf    _HexTemp,W
+    call    putHex
+    goto    putNL
+
+dump
+; input W: number of rows to print
+; input FSR0 : buffer pointer
+    banksel _HexCount
+    movwf   _HexRows
+
+dumpRowL
+    movf    FSR0L,W
+    call    putHex
+    movlw   ':'
+    call    putch
+    movlw   .16
+    movwf   _HexCount
+
+dumpByteL
+    moviw   FSR0++
+    call    putHex
+    movlw   ' '
+    call    putch
+    decfsz  _HexCount
+    goto    dumpByteL
+
+    call    putNL
+    decfsz  _HexRows
+    goto    dumpRowL
+    retlw   0
     END
 
