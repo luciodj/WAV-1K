@@ -2,7 +2,7 @@
     ;
     ;
 #include "main.inc"
-    
+
     GLOBAL  PWM_init
 PWM	CODE
 
@@ -21,7 +21,8 @@ TMR2_init
     bsf	    PIE4,TMR2IE
     banksel T2CON
     bsf	    T2CON,TMR2ON
-    
+    bsf     INTCON,PEIE
+
 PWM7_init
     banksel PWM7CON
     set_sfr PWM7CON,0x80

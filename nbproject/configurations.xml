@@ -72,7 +72,7 @@
         <property key="default.radix" value="HEX"/>
         <property key="enable.case.sensitivity" value="true"/>
         <property key="hex.output.format" value="INHX32"/>
-        <property key="preprocessor.macros" value=""/>
+        <property key="preprocessor.macros" value="__SKIP"/>
         <property key="warning.level" value="1"/>
       </MPASMWIN-AS>
       <MPASMWIN-LD>

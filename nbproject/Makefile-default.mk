@@ -109,7 +109,7 @@ ${OBJECTDIR}/main.o: main.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/main.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_SIMULATOR=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/main.lst\\\" -e\\\"${OBJECTDIR}/main.err\\\" $(ASM_OPTIONS) -w1   -o\\\"${OBJECTDIR}/main.o\\\" \\\"main.asm\\\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/main.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_SIMULATOR=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/main.lst\\\" -e\\\"${OBJECTDIR}/main.err\\\" $(ASM_OPTIONS) -d__SKIP -w1   -o\\\"${OBJECTDIR}/main.o\\\" \\\"main.asm\\\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/main.o"
 	@${FIXDEPS} "${OBJECTDIR}/main.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
@@ -117,7 +117,7 @@ ${OBJECTDIR}/delay.o: delay.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/delay.o.d 
 	@${RM} ${OBJECTDIR}/delay.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/delay.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_SIMULATOR=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/delay.lst\\\" -e\\\"${OBJECTDIR}/delay.err\\\" $(ASM_OPTIONS) -w1   -o\\\"${OBJECTDIR}/delay.o\\\" \\\"delay.asm\\\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/delay.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_SIMULATOR=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/delay.lst\\\" -e\\\"${OBJECTDIR}/delay.err\\\" $(ASM_OPTIONS) -d__SKIP -w1   -o\\\"${OBJECTDIR}/delay.o\\\" \\\"delay.asm\\\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/delay.o"
 	@${FIXDEPS} "${OBJECTDIR}/delay.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
@@ -125,7 +125,7 @@ ${OBJECTDIR}/serial.o: serial.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/serial.o.d 
 	@${RM} ${OBJECTDIR}/serial.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/serial.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_SIMULATOR=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/serial.lst\\\" -e\\\"${OBJECTDIR}/serial.err\\\" $(ASM_OPTIONS) -w1   -o\\\"${OBJECTDIR}/serial.o\\\" \\\"serial.asm\\\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/serial.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_SIMULATOR=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/serial.lst\\\" -e\\\"${OBJECTDIR}/serial.err\\\" $(ASM_OPTIONS) -d__SKIP -w1   -o\\\"${OBJECTDIR}/serial.o\\\" \\\"serial.asm\\\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/serial.o"
 	@${FIXDEPS} "${OBJECTDIR}/serial.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
@@ -133,7 +133,7 @@ ${OBJECTDIR}/pwm.o: pwm.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/pwm.o.d 
 	@${RM} ${OBJECTDIR}/pwm.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/pwm.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_SIMULATOR=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/pwm.lst\\\" -e\\\"${OBJECTDIR}/pwm.err\\\" $(ASM_OPTIONS) -w1   -o\\\"${OBJECTDIR}/pwm.o\\\" \\\"pwm.asm\\\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/pwm.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_SIMULATOR=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/pwm.lst\\\" -e\\\"${OBJECTDIR}/pwm.err\\\" $(ASM_OPTIONS) -d__SKIP -w1   -o\\\"${OBJECTDIR}/pwm.o\\\" \\\"pwm.asm\\\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/pwm.o"
 	@${FIXDEPS} "${OBJECTDIR}/pwm.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
@@ -141,7 +141,7 @@ ${OBJECTDIR}/sdmmc.o: sdmmc.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/sdmmc.o.d 
 	@${RM} ${OBJECTDIR}/sdmmc.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/sdmmc.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_SIMULATOR=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/sdmmc.lst\\\" -e\\\"${OBJECTDIR}/sdmmc.err\\\" $(ASM_OPTIONS) -w1   -o\\\"${OBJECTDIR}/sdmmc.o\\\" \\\"sdmmc.asm\\\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/sdmmc.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_SIMULATOR=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/sdmmc.lst\\\" -e\\\"${OBJECTDIR}/sdmmc.err\\\" $(ASM_OPTIONS) -d__SKIP -w1   -o\\\"${OBJECTDIR}/sdmmc.o\\\" \\\"sdmmc.asm\\\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/sdmmc.o"
 	@${FIXDEPS} "${OBJECTDIR}/sdmmc.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
@@ -150,7 +150,7 @@ ${OBJECTDIR}/main.o: main.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/main.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/main.lst\\\" -e\\\"${OBJECTDIR}/main.err\\\" $(ASM_OPTIONS) -w1   -o\\\"${OBJECTDIR}/main.o\\\" \\\"main.asm\\\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/main.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/main.lst\\\" -e\\\"${OBJECTDIR}/main.err\\\" $(ASM_OPTIONS) -d__SKIP -w1   -o\\\"${OBJECTDIR}/main.o\\\" \\\"main.asm\\\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/main.o"
 	@${FIXDEPS} "${OBJECTDIR}/main.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
@@ -158,7 +158,7 @@ ${OBJECTDIR}/delay.o: delay.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/delay.o.d 
 	@${RM} ${OBJECTDIR}/delay.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/delay.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/delay.lst\\\" -e\\\"${OBJECTDIR}/delay.err\\\" $(ASM_OPTIONS) -w1   -o\\\"${OBJECTDIR}/delay.o\\\" \\\"delay.asm\\\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/delay.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/delay.lst\\\" -e\\\"${OBJECTDIR}/delay.err\\\" $(ASM_OPTIONS) -d__SKIP -w1   -o\\\"${OBJECTDIR}/delay.o\\\" \\\"delay.asm\\\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/delay.o"
 	@${FIXDEPS} "${OBJECTDIR}/delay.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
@@ -166,7 +166,7 @@ ${OBJECTDIR}/serial.o: serial.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/serial.o.d 
 	@${RM} ${OBJECTDIR}/serial.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/serial.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/serial.lst\\\" -e\\\"${OBJECTDIR}/serial.err\\\" $(ASM_OPTIONS) -w1   -o\\\"${OBJECTDIR}/serial.o\\\" \\\"serial.asm\\\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/serial.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/serial.lst\\\" -e\\\"${OBJECTDIR}/serial.err\\\" $(ASM_OPTIONS) -d__SKIP -w1   -o\\\"${OBJECTDIR}/serial.o\\\" \\\"serial.asm\\\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/serial.o"
 	@${FIXDEPS} "${OBJECTDIR}/serial.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
@@ -174,7 +174,7 @@ ${OBJECTDIR}/pwm.o: pwm.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/pwm.o.d 
 	@${RM} ${OBJECTDIR}/pwm.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/pwm.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/pwm.lst\\\" -e\\\"${OBJECTDIR}/pwm.err\\\" $(ASM_OPTIONS) -w1   -o\\\"${OBJECTDIR}/pwm.o\\\" \\\"pwm.asm\\\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/pwm.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/pwm.lst\\\" -e\\\"${OBJECTDIR}/pwm.err\\\" $(ASM_OPTIONS) -d__SKIP -w1   -o\\\"${OBJECTDIR}/pwm.o\\\" \\\"pwm.asm\\\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/pwm.o"
 	@${FIXDEPS} "${OBJECTDIR}/pwm.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
@@ -182,7 +182,7 @@ ${OBJECTDIR}/sdmmc.o: sdmmc.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/sdmmc.o.d 
 	@${RM} ${OBJECTDIR}/sdmmc.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/sdmmc.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/sdmmc.lst\\\" -e\\\"${OBJECTDIR}/sdmmc.err\\\" $(ASM_OPTIONS) -w1   -o\\\"${OBJECTDIR}/sdmmc.o\\\" \\\"sdmmc.asm\\\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/sdmmc.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/sdmmc.lst\\\" -e\\\"${OBJECTDIR}/sdmmc.err\\\" $(ASM_OPTIONS) -d__SKIP -w1   -o\\\"${OBJECTDIR}/sdmmc.o\\\" \\\"sdmmc.asm\\\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/sdmmc.o"
 	@${FIXDEPS} "${OBJECTDIR}/sdmmc.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	

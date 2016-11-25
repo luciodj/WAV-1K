@@ -17,16 +17,19 @@ serial    CODE
 
 serial_init
 ; init 9600 baud @32MHz
+ ifndef __SKIP
     banksel BAUD1CON
     set_sfr BAUD1CON, 0x08
     set_sfr RC1STA, 0x90
     set_sfr TX1STA, 0x24
     set_sfr SP1BRGL, 0x40
     set_sfr SP1BRGH, 0x03
+ endif
     retlw   1
 
 getch
 ; output W = received data
+ ifndef  __SKIP
     banksel PIR3
     wait_until PIR3,RCIF
 
@@ -36,17 +39,20 @@ getch
 	bsf RC1STA,SPEN
 
     movf    RC1REG,W
+ endif
     return
 
 putch
 ; input W = data to transmit
+ ifndef __SKIP
     banksel PIR3
     wait_until PIR3,TXIF
 
     banksel TX1REG
     movwf   TX1REG
     banksel _HexTemp
-    return
+ endif
+   return
 
 putsz
 ; input FSR1 = points to zero terminated ascii string
@@ -67,6 +73,7 @@ putNL
     goto    putch
 
 putHex
+ ifndef __SKIP
     banksel _HexTemp
     movwf    _HexTemp
     swapf   _HexTemp,W
@@ -88,6 +95,7 @@ putHex
     movf    _HexTemp2,W
     bnc	    $+2
     addlw   7
+ endif
     goto    putch
 
 printf
@@ -101,6 +109,7 @@ printf
 dump
 ; input W: number of rows to print
 ; input FSR0 : buffer pointer
+ ifndef __SKIP
     banksel _HexCount
     movwf   _HexRows
 
@@ -123,6 +132,7 @@ dumpByteL
     call    putNL
     decfsz  _HexRows
     goto    dumpRowL
+ endif
     retlw   0
     END
 
