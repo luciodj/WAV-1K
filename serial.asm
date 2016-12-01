@@ -2,9 +2,10 @@
 ; serial port
 ;
 #include "main.inc"
+#include "sdmmc.inc"
 
     GLOBAL serial_init, getch, putch, putsz, puts,
-    GLOBAL putHex, printf, putNL, dump
+    GLOBAL putHex, printf, printLBA, putNL, dump
 
 serial_data    IDATA
 _HexTemp    res	    1
@@ -99,11 +100,21 @@ putHex
     goto    putch
 
 printf
-    banksel _HexTemp
+    banksel _HexTemp    ; save W
     movwf   _HexTemp
-    call    putsz
+    call    putsz       ; print string
     movf    _HexTemp,W
+    call    putHex      ; followed by the hex value of W
+    goto    putNL
+
+printLBA
+    call    putsz       ; print the string
+    movf    LBA+2,W     ; print hex LBA
     call    putHex
+    movf    LBA+1,W
+    call    putHex
+    movf    LBA,W
+    call    putHex      ; CRLF
     goto    putNL
 
 dump

@@ -27,11 +27,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=WAV-1k.X
 
 # Active Configuration
-DEFAULTCONF=default
+DEFAULTCONF=debug_xpress
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=default 
+ALLCONFS=final debug_simulator debug_xpress 
 
 
 # build
@@ -45,13 +45,17 @@ ALLCONFS=default
 
 # clobber
 .clobber-impl: .clobber-pre .depcheck-impl
-	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=default clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=final clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=debug_simulator clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=debug_xpress clean
 
 
 
 # all
 .all-impl: .all-pre .depcheck-impl
-	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=default build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=final build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=debug_simulator build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=debug_xpress build
 
 
 

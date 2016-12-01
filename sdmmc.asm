@@ -2,7 +2,7 @@
     ; SDMMC.asm
     ;
 #include "main.inc"
-#include "serial.inc"
+;#include "serial.inc"
 
     GLOBAL  SD_MEDIAinit, SD_SECTORread, LBA
 
@@ -195,15 +195,15 @@ SD_SECTORread
 
     ; 2. wait for DATA_START
 SD_SECTORwait
-    movlw   HIGH(.100)+1
+    movlw   HIGH(.1000)+1
     movwf   countH
-    movlw   LOW(.100)
+    movlw   LOW(.1000)
     movwf   count
 
 SD_SECTORwaitL
     SPI_read
     xorlw   DATA_START
-    bz      SD_SECTORwaitB
+    bz      SD_SECTORwaitB  ; data has arrived
     decfsz  count
     bra     SD_SECTORwaitL
     decfsz  countH
