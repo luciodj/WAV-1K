@@ -43,35 +43,25 @@
 #define DIR_DEL          0xE5   ; marker deleted entry
 #define DIR_EMPTY           0   ; marker last entry in directory
 
-#define LED_MOUNT           LATA,0   ; Successfull mount
-#define LED_WAV             LATA,1   ; Found WAV file
-#define LED_PLAY            LATA,2   ; Playing NOW!
-#define LED_ERROR           LATA,3   ; if on the previous 3 indicate the FERROR code
+#define buffer      0x2000  ; -20ff
+#define buffer1     0x2100  ; -21ff
+#define buffer2     0x2200  ; -22ff
 
-#define buffer	0x2100
-
-.main	udata 0x20
-temp	    res	    4
+.main	udata 0x520     ; 0x2320 in linear memory
+temp	    res	    1
 count       res     1
-firstSec    res     3   ; assume always < 16 bit
-root        res     3   ; assume always < 16 bit
-fat         res     3
-sdata       res     3
+boot        res     2   ; assume always < 16 bit
+root        res     2   ; assume always < 16 bit
+fat         res     2   ; assume always < 16
+sdata       res     2   ; assume always < 16
 fatSize     res     2
-fatCopy     res     1
+;fatCopy     res     1  ; assume always two copies
 sxc         res     1   ; cluster size
 curBuf      res     1
 FError      res     1
 cluster     res     2   ; cluster in fat
 size        res     4   ; total file size
 sec         res     1   ; sector in cluster
-;partSize    res     3
-;rootMax     res     2
-;ePointer    res     2   ; pointer to entry in buffer
-;entry       res     2   ; entry in root [0-rootMax]
-;seek        res     4   ; byte in file
-;pos         res     2   ; position in sector
-;fpage       res     1   ; flag of page caching
 
 BCount      res     1   ; 256 bytes buffers
 EmptyFlag   res     1   ; 1 = need refilling
@@ -89,8 +79,13 @@ interrupt_vector
     ; 2. load the new sample
     ; handle only 8-bit mono!
     moviw   FSR1++
+;    asrf    WREG
+;    movlw   0x80
     banksel PWM7DCH
     movwf   PWM7DCH
+    clrf    PWM7DCL
+    lsrf    PWM7DCH
+    rrf     PWM7DCL
 
     ; 3. check if buffer emptied
     banksel BCount
@@ -100,10 +95,11 @@ interrupt_vector
     ; 3.1 swap buffers
     movlw   1
     xorwf   curBuf  ; toggle
-    LFSR1   buffer
-    movlw   2
+    clrf    FSR1L
+    movlw   HIGH(buffer)
     btfsc   curBuf,0
-    addwf   FSR1H
+    movlw   HIGH(buffer2)
+    movwf   FSR1H
     ; 3.2 buffer refilled
 ;    clrf    BCount
     ; 3.3 flag a new buffer needs to be prepared
@@ -170,15 +166,14 @@ FileError
  ifdef DEBUG_PRINT
 szError     dt  "Error: ",0
 szFAT       dt  "FAT: ",0
-szRoot      dt  "ROOT:",0
+szRoot      dt  "Root:",0
 szBoot      dt  "Boot:",0
 szData      dt  "Data:",0
 szSize      dt  "Size:",0
 szCluster   dt  "Cluster:",0
 szSector    dt  "Sector:",0
-
-
  endif
+
 mount
     ; 1-2. try to init media (detect presence)
     call    SD_MEDIAinit
@@ -193,9 +188,9 @@ MediaInitialized
     ; 5. get the Master Boot Record
     LLBA    FO_MBR
     call    SD_SECTORread
- ifdef  DEBUG_PRINT
     bnz     MBRError
 
+ ifdef  DEBUG_PRINT
     ; 6. check signature
     LFSR0   buffer+FO_SIGN
     moviw   FSR0++
@@ -204,10 +199,12 @@ MediaInitialized
     moviw   FSR0++
     xorlw   0xAA
     bz      ValidMBR
+ endif
+
 MBRError
     movlw   FE_INVALID_MBR
     goto    MountError
- endif
+
 ValidMBR
     ; read number of sectors in partition?
  ifdef DEBUG_PRINT
@@ -235,21 +232,22 @@ ValidPartition
     ; 9. get the first sector (boot record) of the first partition
     LFSR0   buffer+FO_FIRST_SECT
     moviw   FSR0++
-    banksel firstSec
+    banksel boot
     movwf   LBA
-    movwf    firstSec
+    movwf    boot
     moviw   FSR0++
     movwf   LBA+1
-    movwf    firstSec+1
-    moviw   FSR0++
-    movwf   LBA+2
-    movwf   firstSec+2
+    movwf    boot+1
+;    moviw   FSR0++
+;    movwf   LBA+2
+;    movwf   boot+2
+    clrf    LBA+2
 
   ifdef DEBUG_PRINT
     LFSR1   szBoot
     call    printLBA
-
   endif
+
     ; 10. load the (Partition) Boot Record
     LFSR0   buffer
     call    SD_SECTORread
@@ -272,29 +270,30 @@ BRError
 ValidBR
     ; 12. determine the cluster size
     banksel sxc
-    LFSR0   buffer+BR_SXC
-    moviw   FSR0++
+    LFSR0   buffer
+    moviw   BR_SXC[FSR0]
     movwf   sxc
 
     ; 13. get FAT info (offset, size, num. copies)
-    LFSR0   buffer+BR_RES
-    moviw   FSR0++
+;    LFSR0   buffer+BR_RES
+    moviw   BR_RES[FSR0]
     movwf   fat         ; fat offset(word)
     movwf   LBA     ;; DEBUG
-    moviw   FSR0++
+    moviw   (BR_RES+1)[FSR0]
     movwf   fat+1
-    movwf   LBA+1   ;; DEBUG
-    clrf    WREG
-    movwf   fat+2
-    movwf   LBA+2   ;; DEBUG
+;    movwf   LBA+1   ;; DEBUG
+;    clrf    WREG
+;    movwf   fat+2
+;    movwf   LBA+2   ;; DEBUG
+;    clrf    LBA+2
 
     ; add the first sector LBA
-    movf    firstSec,W
+    movf    boot,W
     addwf   fat
-    movf    firstSec+1,W
+    movf    boot+1,W
     addwfc  fat+1
-    movf    firstSec+2,W
-    addwfc  fat+2
+;    movf    boot+2,W
+;    addwfc  fat+2
 
  ifdef DEBUG_PRINT
     LFSR1   szFAT
@@ -302,10 +301,10 @@ ValidBR
     call    printLBA
  endif
 
-    LFSR0   buffer+BR_FAT_SIZE
-    moviw   FSR0++
+;    LFSR0   buffer+BR_FAT_SIZE
+    moviw   BR_FAT_SIZE[FSR0]
     movwf   fatSize
-    moviw   FSR0++
+    moviw   (BR_FAT_SIZE+1)[FSR0]
     movwf   fatSize+1
 
 ; assume always fatCopy = 2
@@ -326,9 +325,9 @@ ValidBR
     movf    fat+1,W
     addwfc  fatSize+1,W
     movwf   root+1
-    movlw   0
-    addwfc  fat+2,W
-    movwf   root+2
+;    movlw   0
+;    addwfc  fat+2,W
+;    movwf   root+2
 
  ifdef DEBUG_PRINT
     LFSR1   szRoot
@@ -366,9 +365,9 @@ ValidBR
 ;    addlw   0
 ;    addwfc  rootMax+1,W
     movwf   sdata+1
-    movlw   0
-    addwfc  root+2,W
-    movwf   sdata+2
+;    movlw   0
+;    addwfc  root+2,W
+;    movwf   sdata+2
 ;    clrf    sdata+2
 
  ifdef DEBUG_PRINT
@@ -416,12 +415,13 @@ MultLoopB
     addwf   LBA
     movf    sdata+1,W
     addwfc  LBA+1
-    movf    sdata+2,W
+    movlw   0
+;    movf    sdata+2,W
     addwfc  LBA+2
 ;    LFSR1   szSector        ; DBG
 ;    call    printLBA        ; DBG
 
-    LFSR0   buffer          ; find a buffer
+    LFSR0   buffer          ; load the first sector
     goto    SD_SECTORread
 
 ;---------------------------------------------------------------
@@ -455,19 +455,13 @@ DIRloop
     bnz     DIRhidden
     ; 6.5 compare extension
     moviw   DIR_EXT[FSR0]
-    movwf   temp
-    moviw   FSR1++
-    xorwf   temp,W
+    xorlw   'W'
     bnz     DIRnomatch
     moviw   DIR_EXT+1[FSR0]
-    movwf   temp
-    moviw   FSR1++
-    xorwf   temp,W
+    xorlw   'A'
     bnz     DIRnomatch
     moviw   DIR_EXT+2[FSR0]
-    movwf   temp
-    moviw   FSR1++
-    xorwf   temp,W
+    xorlw   'V'
     bnz     DIRnomatch
 FoundIt
     ; 8-9. entry found init file structure
@@ -483,8 +477,9 @@ FoundIt
 ;    clrf    LBA+2
 ;    call    printLBA
 ;    banksel size
+
     ; 12. determine how much data is really inside the file
-    clrf    size
+    clrf    size        ; ignore the LSB
     moviw   DIR_SIZE+1[FSR0]
     movwf   size+1
     moviw   DIR_SIZE+2[FSR0]
@@ -504,7 +499,7 @@ DIRnomatch
 DIRdeleted
     addfsr  FSR0,.16
     addfsr  FSR0,.16
-    decfsz   count
+    decfsz  count
     goto    DIRloop
 
 DIRLoopExit
@@ -531,6 +526,7 @@ FATnext
 ;    bz      FATreadB
 ;    movlw   FE_FAT_EOF
 ;    goto    FileError
+
 FATreadB
     banksel cluster
     LFSR0   buffer
@@ -551,18 +547,6 @@ FATreadB
     return                  ; Z success
 
 ;---------------------------------------------------------------
-getBuffer
-; input CurBuffer
-; output FSR0 = &B[CurBuf]
-    LFSR0   buffer
-    banksel curBuf
-    btfsc   curBuf,0
-    incf    FSR0H
-    return
-
-;---------------------------------------------------------------
-sWAV       dt  "WAV"
-
 main
 	call SYSTEM_init
 	; enable interrupts
@@ -571,10 +555,15 @@ mainL
 	movlw   .50	    ; 500 ms delay
 	call    delay_10ms
 
-    LFSR1   szError
     call    mount
     bz      success
+
+ ifdef  DEBUG_PRINT
+    LFSR1   szError
+    movf    FError,W
     call    printf
+ endif
+
     goto    mainL
 
 success
@@ -597,7 +586,6 @@ success
 ;    call    putNL
 
     clrf    curBuf      ; init the working buffer
-    LFSR1   sWAV
     LFSR0   buffer
     call    ffind
 ;    call    putHex      ; print the return code
@@ -613,17 +601,18 @@ success
 ;play
 ;AUDIO_init
     banksel curBuf
-    bsf     curBuf,0    ; start with buffer 0 active first
-    LFSR1   buffer      ; put the audio pointer on its first byte
+    bsf     curBuf,0    ; start with buffer 1 active first
+    LFSR1   buffer1      ; put the audio pointer on its first byte
     clrf    BCount      ; init the counter to 256 samples
     bsf     EmptyFlag,0 ; immediately signal need a new buffer
     bsf     INTCON,GIE
+    banksel LATA
     bsf     LED_PLAY
 ;    movlw   1
 ;    movwf   size+1
 ;    clrf    size+1      ; DBG
 ;    clrf    size+2      ; DBG
-;    clrf    size+3
+    clrf    size+3
 
 playLoop
     ; check if file exhausted
@@ -633,7 +622,7 @@ playLoop
     movlw   0
     subwfb  size+2
     subwfb  size+3
-    bnc     stop        ; borrow (NC)
+    bnc     AUDIO_stop        ; borrow (NC)
 
 ;    LFSR1   szSize
 ;    CPLBA   size
@@ -659,17 +648,21 @@ playLoop
     clrf    sec         ; get the next cluster
     call    FATnext
 DATAnext
+    banksel LATA
     bsf     LED_WAV
     call    DATAread
+    bnz     AUDIO_stop
+    banksel LATA
     bcf     LED_WAV
     goto    playLoop
 ;
 ;    ; copy buffer
 cpyBuffer
+    banksel LATA
     bsf     LED_MOUNT
     banksel  count
-    clrf    count          ; cpy 256 bytes
-    LFSR0   buffer+0x100    ; source buffer 1
+    clrf    count       ; cpy 256 bytes
+    LFSR0   buffer1     ; source buffer 1
 
 ; testing the move function
 ;fillLoop
@@ -687,21 +680,28 @@ cpyBuffer
 ;    LFSR0   buffer+0x100    ; source buffer 1
 
 cpyLoop
-    moviw   FSR0++
-    addfsr  FSR0,-1         ; do not advance just yet
+    moviw   0[FSR0]
     incf    FSR0H           ; destination buffer 2
     movwi   FSR0++
     decf    FSR0H           ; back to source
     decfsz  count
     goto    cpyLoop
-
+    banksel LATA
     bcf     LED_MOUNT
     goto    playLoop
 
-stop
+
 AUDIO_stop
+    banksel LATA
     bcf     LED_PLAY
     bcf     INTCON,GIE
+
+; show what was last loaded
+    LFSR0   buffer     ;
+    movlw   .8
+    DUMP
+    PUTNL
+stop
 	goto    stop
 
     END

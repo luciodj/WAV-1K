@@ -12,6 +12,7 @@ _HexTemp    res	    1
 _HexTemp2   res	    1
 _HexCount   res     1
 _HexRows    res     1
+_BSRsave    res     1
 
 
 serial    CODE
@@ -30,17 +31,17 @@ serial_init
 
 getch
 ; output W = received data
- ifndef  __SKIP
     banksel PIR3
-    wait_until PIR3,RCIF
+    btfss   PIR3,RCIF
+    bra     $-1
 
     banksel RC1REG
-    if_flag RC1STA,OERR, otherwise, +3
-	bcf RC1STA,SPEN
-	bsf RC1STA,SPEN
-
+    btfss   RC1STA,OERR
+    bra     no_err
+	bcf     RC1STA,SPEN
+	bsf     RC1STA,SPEN
+no_err
     movf    RC1REG,W
- endif
     return
 
 putch
@@ -108,6 +109,9 @@ printf
     goto    putNL
 
 printLBA
+    movf    BSR,W       ; save the bank
+    banksel _BSRsave
+    movwf   _BSRsave
     call    putsz       ; print the string
     movf    LBA+2,W     ; print hex LBA
     call    putHex
@@ -115,7 +119,10 @@ printLBA
     call    putHex
     movf    LBA,W
     call    putHex      ; CRLF
-    goto    putNL
+    call    putNL
+    movf    _BSRsave,W
+    movwf   BSR
+    return
 
 dump
 ; input W: number of rows to print
