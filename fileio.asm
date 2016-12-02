@@ -7,7 +7,7 @@
 #include fileio.inc
 
 ; from fileio
-    global  mount, find, read, next, size, sec, sxc
+    global  mount, find, read, next, size, sec, sxc, szError, FError
 
 .fileio     udata 0x520     ; 0x2320 in linear memory
 temp	    res	    1

@@ -9,7 +9,7 @@
 #include "fileio.inc"
 #include "serial.inc"
 
- extern mount, find, next, read, size, sec, sxc
+ extern mount, find, next, read, size, sec, sxc, szError, FError
 
 
 .audio_shr    UDATA_SHR
