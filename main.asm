@@ -79,31 +79,43 @@ interrupt_vector
     ; 2. load the new sample
     ; handle only 8-bit mono!
     moviw   FSR1++
-;    asrf    WREG
 ;    movlw   0x80
     banksel PWM7DCH
-    movwf   PWM7DCH
+;    lsrf    WREG
+;    movwf   PWM7DCH
     clrf    PWM7DCL
     lsrf    PWM7DCH
     rrf     PWM7DCL
+    lsrf    PWM7DCH
+    rrf     PWM7DCL
+;    call    putch
+    banksel FSR1L_SHAD
+    incf    FSR1L_SHAD
 
     ; 3. check if buffer emptied
     banksel BCount
     decfsz  BCount
-    retfie
+    goto    ISRexit
 
     ; 3.1 swap buffers
     movlw   1
     xorwf   curBuf  ; toggle
-    clrf    FSR1L
+    banksel FSR1L_SHAD
+    clrf    FSR1L_SHAD
     movlw   HIGH(buffer)
+    banksel curBuf
     btfsc   curBuf,0
     movlw   HIGH(buffer2)
-    movwf   FSR1H
+    banksel FSR1H_SHAD
+    movwf   FSR1H_SHAD
     ; 3.2 buffer refilled
 ;    clrf    BCount
     ; 3.3 flag a new buffer needs to be prepared
+    banksel EmptyFlag
     bsf     EmptyFlag,0
+ISRexit
+    banksel PIR4
+    bcf     PIR4,TMR2IF
     retfie
 
 ;-------------------------------------------------------------
@@ -602,7 +614,7 @@ success
 ;AUDIO_init
     banksel curBuf
     bsf     curBuf,0    ; start with buffer 1 active first
-    LFSR1   buffer1      ; put the audio pointer on its first byte
+    LFSR1   buffer      ; put the audio pointer on its first byte
     clrf    BCount      ; init the counter to 256 samples
     bsf     EmptyFlag,0 ; immediately signal need a new buffer
     bsf     INTCON,GIE
@@ -622,7 +634,7 @@ playLoop
     movlw   0
     subwfb  size+2
     subwfb  size+3
-    bnc     AUDIO_stop        ; borrow (NC)
+    bnc     AUDIO_stop  ; borrow (NC)
 
 ;    LFSR1   szSize
 ;    CPLBA   size
@@ -648,18 +660,18 @@ playLoop
     clrf    sec         ; get the next cluster
     call    FATnext
 DATAnext
-    banksel LATA
-    bsf     LED_WAV
+;    banksel LATA
+;    bsf     LED_WAV
     call    DATAread
     bnz     AUDIO_stop
     banksel LATA
-    bcf     LED_WAV
-    goto    playLoop
+;    bcf     LED_WAV
+;    goto    playLoop
 ;
 ;    ; copy buffer
 cpyBuffer
-    banksel LATA
-    bsf     LED_MOUNT
+;    banksel LATA
+;    bsf     LED_MOUNT
     banksel  count
     clrf    count       ; cpy 256 bytes
     LFSR0   buffer1     ; source buffer 1
@@ -686,8 +698,8 @@ cpyLoop
     decf    FSR0H           ; back to source
     decfsz  count
     goto    cpyLoop
-    banksel LATA
-    bcf     LED_MOUNT
+;    banksel LATA
+;    bcf     LED_MOUNT
     goto    playLoop
 
 
@@ -697,10 +709,11 @@ AUDIO_stop
     bcf     INTCON,GIE
 
 ; show what was last loaded
-    LFSR0   buffer     ;
-    movlw   .8
-    DUMP
-    PUTNL
+;    LFSR0   buffer     ;
+;    movlw   .8
+;    DUMP
+;    PUTNL
+
 stop
 	goto    stop
 
