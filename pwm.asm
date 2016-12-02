@@ -9,18 +9,17 @@ PWM	CODE
 PWM_init
 TMR2_init
     banksel T2CON
-    set_sfr T2CON,0x01
     set_sfr T2CLKCON,0x01
-    set_sfr T2HLT,0x01
-    clrf    T2RST
-    set_sfr T2PR,0xb0
-    clrf    T2TMR
+    set_sfr T2HLT,0x00
+;    clrf    T2RST
+    set_sfr T2PR,0xb3
+;    clrf    T2TMR
     banksel PIR4
     bcf	    PIR4,TMR2IF
     banksel PIE4
     bsf	    PIE4,TMR2IE
     banksel T2CON
-    bsf	    T2CON,TMR2ON
+    set_sfr T2CON,0x80
     bsf     INTCON,PEIE
 
 PWM7_init

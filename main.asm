@@ -82,12 +82,12 @@ interrupt_vector
 ;    movlw   0x80
     banksel PWM7DCH
 ;    lsrf    WREG
-;    movwf   PWM7DCH
-    clrf    PWM7DCL
-    lsrf    PWM7DCH
-    rrf     PWM7DCL
-    lsrf    PWM7DCH
-    rrf     PWM7DCL
+    movwf   PWM7DCH
+;    clrf    PWM7DCL
+;    lsrf    PWM7DCH
+;    rrf     PWM7DCL
+;    lsrf    PWM7DCH
+;    rrf     PWM7DCL
 ;    call    putch
     banksel FSR1L_SHAD
     incf    FSR1L_SHAD
@@ -610,7 +610,7 @@ success
 
 ;
 
-;play
+play
 ;AUDIO_init
     banksel curBuf
     bsf     curBuf,0    ; start with buffer 1 active first
@@ -624,7 +624,7 @@ success
 ;    movwf   size+1
 ;    clrf    size+1      ; DBG
 ;    clrf    size+2      ; DBG
-    clrf    size+3
+;    clrf    size+3
 
 playLoop
     ; check if file exhausted
@@ -641,6 +641,7 @@ playLoop
 ;    call    printLBA
 
     ; check if button pressed
+
     ; check if buffer needs refilling
     btfss   EmptyFlag,0
     goto    $-1
@@ -664,9 +665,9 @@ DATAnext
 ;    bsf     LED_WAV
     call    DATAread
     bnz     AUDIO_stop
-    banksel LATA
+;    banksel LATA
 ;    bcf     LED_WAV
-;    goto    playLoop
+    goto    playLoop
 ;
 ;    ; copy buffer
 cpyBuffer
