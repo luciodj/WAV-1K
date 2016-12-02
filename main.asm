@@ -57,12 +57,13 @@ sdata       res     2   ; assume always < 16
 fatSize     res     2
 ;fatCopy     res     1  ; assume always two copies
 sxc         res     1   ; cluster size
-curBuf      res     1
 FError      res     1
 cluster     res     2   ; cluster in fat
 size        res     4   ; total file size
 sec         res     1   ; sector in cluster
 
+.main_shr    UDATA_SHR
+curBuf      res     1   ; current buffer playing
 BCount      res     1   ; 256 bytes buffers
 EmptyFlag   res     1   ; 1 = need refilling
 
@@ -75,47 +76,34 @@ reset_vector
 interrupt_vector
     banksel PIR4
     bcf     PIR4,TMR2IF
-    ; 1. handle skip via T2 postscaler
-    ; 2. load the new sample
-    ; handle only 8-bit mono!
+    ; 1.,2. load the new sample
     moviw   FSR1++
-;    movlw   0x80
     banksel PWM7DCH
-;    lsrf    WREG
     movwf   PWM7DCH
-;    clrf    PWM7DCL
-;    lsrf    PWM7DCH
-;    rrf     PWM7DCL
-;    lsrf    PWM7DCH
-;    rrf     PWM7DCL
-;    call    putch
-    banksel FSR1L_SHAD
-    incf    FSR1L_SHAD
+
+    banksel FSR1L_SHAD  ; ISR context saving has saved a copy of FSR1
+    incf    FSR1L_SHAD  ; must update the saved copy too!
 
     ; 3. check if buffer emptied
-    banksel BCount
     decfsz  BCount
     goto    ISRexit
 
     ; 3.1 swap buffers
     movlw   1
     xorwf   curBuf  ; toggle
-    banksel FSR1L_SHAD
     clrf    FSR1L_SHAD
     movlw   HIGH(buffer)
-    banksel curBuf
     btfsc   curBuf,0
     movlw   HIGH(buffer2)
-    banksel FSR1H_SHAD
     movwf   FSR1H_SHAD
+
     ; 3.2 buffer refilled
 ;    clrf    BCount
+
     ; 3.3 flag a new buffer needs to be prepared
-    banksel EmptyFlag
     bsf     EmptyFlag,0
+
 ISRexit
-    banksel PIR4
-    bcf     PIR4,TMR2IF
     retfie
 
 ;-------------------------------------------------------------
@@ -171,6 +159,9 @@ MountError
 FileError
     banksel FError
     movwf   FError
+    banksel PORTA
+;    movwf   PORTA      ; DBG
+    bsf     LED_ERROR
     iorlw   0
     return  ; FAIL NZ
 
@@ -200,9 +191,10 @@ MediaInitialized
     ; 5. get the Master Boot Record
     LLBA    FO_MBR
     call    SD_SECTORread
-    bnz     MBRError
 
  ifdef  DEBUG_PRINT
+    bnz     MBRError
+
     ; 6. check signature
     LFSR0   buffer+FO_SIGN
     moviw   FSR0++
@@ -211,11 +203,11 @@ MediaInitialized
     moviw   FSR0++
     xorlw   0xAA
     bz      ValidMBR
- endif
 
 MBRError
     movlw   FE_INVALID_MBR
     goto    MountError
+ endif
 
 ValidMBR
     ; read number of sectors in partition?
@@ -250,16 +242,13 @@ ValidPartition
     moviw   FSR0++
     movwf   LBA+1
     movwf    boot+1
-;    moviw   FSR0++
-;    movwf   LBA+2
-;    movwf   boot+2
     clrf    LBA+2
 
-  ifdef DEBUG_PRINT
-    LFSR1   szBoot
-    call    printLBA
-  endif
-
+;  ifdef DEBUG_PRINT
+;    LFSR1   szBoot
+;    call    printLBA
+;  endif
+;
     ; 10. load the (Partition) Boot Record
     LFSR0   buffer
     call    SD_SECTORread
@@ -290,28 +279,20 @@ ValidBR
 ;    LFSR0   buffer+BR_RES
     moviw   BR_RES[FSR0]
     movwf   fat         ; fat offset(word)
-    movwf   LBA     ;; DEBUG
     moviw   (BR_RES+1)[FSR0]
     movwf   fat+1
-;    movwf   LBA+1   ;; DEBUG
-;    clrf    WREG
-;    movwf   fat+2
-;    movwf   LBA+2   ;; DEBUG
-;    clrf    LBA+2
 
     ; add the first sector LBA
     movf    boot,W
     addwf   fat
     movf    boot+1,W
     addwfc  fat+1
-;    movf    boot+2,W
-;    addwfc  fat+2
 
- ifdef DEBUG_PRINT
-    LFSR1   szFAT
-    CPLBA   fat
-    call    printLBA
- endif
+; ifdef DEBUG_PRINT
+;    LFSR1   szFAT
+;    CPLBA   fat
+;    call    printLBA
+; endif
 
 ;    LFSR0   buffer+BR_FAT_SIZE
     moviw   BR_FAT_SIZE[FSR0]
@@ -337,15 +318,12 @@ ValidBR
     movf    fat+1,W
     addwfc  fatSize+1,W
     movwf   root+1
-;    movlw   0
-;    addwfc  fat+2,W
-;    movwf   root+2
 
- ifdef DEBUG_PRINT
-    LFSR1   szRoot
-    CPLBA   root
-    call    printLBA
- endif
+; ifdef DEBUG_PRINT
+;    LFSR1   szRoot
+;    CPLBA   root
+;    call    printLBA
+; endif
 
 ;SingleFat
     ; 15. get max root
@@ -370,23 +348,16 @@ ValidBR
     banksel root
     movf    root,W     ; sdata = root + (rootMax >> 4)
     addlw   0x20        ; 512 >> 4
-;    addwf   rootMax,W
     movwf   sdata
     movlw   0
     addwfc  root+1,W
-;    addlw   0
-;    addwfc  rootMax+1,W
     movwf   sdata+1
-;    movlw   0
-;    addwfc  root+2,W
-;    movwf   sdata+2
-;    clrf    sdata+2
 
- ifdef DEBUG_PRINT
-    LFSR1   szData
-    CPLBA   sdata
-    call    printLBA
- endif
+; ifdef DEBUG_PRINT
+;    LFSR1   szData
+;    CPLBA   sdata
+;    call    printLBA
+; endif
 
     ; 17. get max cluster in partition (size)
     andlw   0
@@ -428,10 +399,7 @@ MultLoopB
     movf    sdata+1,W
     addwfc  LBA+1
     movlw   0
-;    movf    sdata+2,W
     addwfc  LBA+2
-;    LFSR1   szSector        ; DBG
-;    call    printLBA        ; DBG
 
     LFSR0   buffer          ; load the first sector
     goto    SD_SECTORread
@@ -579,15 +547,9 @@ mainL
     goto    mainL
 
 success
-;    ; dump  fat
-;    LFSR0   buffer
-;    CPLBA   fat
-;    call    SD_SECTORread
-;    LFSR0   buffer
-;    movlw   .8
-;    call    dump
-;    call    putNL
-;
+    banksel PORTA
+    bsf     LED_MOUNT
+
 ;    ; dump root
 ;    LFSR0   buffer
 ;    CPLBA   root
@@ -600,7 +562,9 @@ success
     clrf    curBuf      ; init the working buffer
     LFSR0   buffer
     call    ffind
-;    call    putHex      ; print the return code
+
+    banksel LATA
+    bsf     LED_WAV
 
 ; show what was loaded
 ;    LFSR0   buffer     ; a RIFF WAV file!
@@ -612,7 +576,6 @@ success
 
 play
 ;AUDIO_init
-    banksel curBuf
     bsf     curBuf,0    ; start with buffer 1 active first
     LFSR1   buffer      ; put the audio pointer on its first byte
     clrf    BCount      ; init the counter to 256 samples
@@ -620,11 +583,6 @@ play
     bsf     INTCON,GIE
     banksel LATA
     bsf     LED_PLAY
-;    movlw   1
-;    movwf   size+1
-;    clrf    size+1      ; DBG
-;    clrf    size+2      ; DBG
-;    clrf    size+3
 
 playLoop
     ; check if file exhausted
@@ -640,7 +598,12 @@ playLoop
 ;    CPLBA   size
 ;    call    printLBA
 
+ ifdef DEBUG_PRINT
     ; check if button pressed
+    banksel PORTA
+    btfss   SW
+    goto    AUDIO_stop
+ endif
 
     ; check if buffer needs refilling
     btfss   EmptyFlag,0

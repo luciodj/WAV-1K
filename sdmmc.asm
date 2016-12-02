@@ -21,7 +21,7 @@
 #define DATA_START      0xFE
 #define DATA_ACCEPT	    0x05
 
-    UDATA_SHR 0x70
+sdmmc_shr   UDATA_SHR 0x70
 LBA     res 3
 count   res 1
 count9  res 1
