@@ -529,7 +529,6 @@ FATreadB
 ;---------------------------------------------------------------
 main
 	call SYSTEM_init
-	; enable interrupts
 
 mainL
 	movlw   .50	    ; 500 ms delay
@@ -572,8 +571,6 @@ success
 ;    DUMP
 ;    PUTNL
 
-;
-
 play
 ;AUDIO_init
     bsf     curBuf,0    ; start with buffer 1 active first
@@ -594,10 +591,6 @@ playLoop
     subwfb  size+3
     bnc     AUDIO_stop  ; borrow (NC)
 
-;    LFSR1   szSize
-;    CPLBA   size
-;    call    printLBA
-
  ifdef DEBUG_PRINT
     ; check if button pressed
     banksel PORTA
@@ -614,8 +607,7 @@ playLoop
     btfss   curBuf,0
     goto    cpyBuffer
 ;
-    ; load a new buffer
-    ; advance to next sector in cluster
+    ; load a new buffer, advance to next sector in cluster
     banksel sec
     incf    sec
     movf    sxc,W       ; compare to sectors per cluster
@@ -624,36 +616,15 @@ playLoop
     clrf    sec         ; get the next cluster
     call    FATnext
 DATAnext
-;    banksel LATA
-;    bsf     LED_WAV
     call    DATAread
     bnz     AUDIO_stop
-;    banksel LATA
-;    bcf     LED_WAV
     goto    playLoop
 ;
 ;    ; copy buffer
 cpyBuffer
-;    banksel LATA
-;    bsf     LED_MOUNT
     banksel  count
     clrf    count       ; cpy 256 bytes
     LFSR0   buffer1     ; source buffer 1
-
-; testing the move function
-;fillLoop
-;    movf    count,W
-;    movwi   FSR0++
-;    decfsz  count
-;    goto    fillLoop
-;
-;fillLoop2
-;    clrf    WREG
-;    movwi   FSR0++
-;    decfsz  count
-;    goto    fillLoop2
-;
-;    LFSR0   buffer+0x100    ; source buffer 1
 
 cpyLoop
     moviw   0[FSR0]
@@ -662,21 +633,13 @@ cpyLoop
     decf    FSR0H           ; back to source
     decfsz  count
     goto    cpyLoop
-;    banksel LATA
-;    bcf     LED_MOUNT
-    goto    playLoop
 
+    goto    playLoop
 
 AUDIO_stop
     banksel LATA
     bcf     LED_PLAY
     bcf     INTCON,GIE
-
-; show what was last loaded
-;    LFSR0   buffer     ;
-;    movlw   .8
-;    DUMP
-;    PUTNL
 
 stop
 	goto    stop
