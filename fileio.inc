@@ -2,6 +2,15 @@
 ; fileio.inc
 ;
 
+ ifndef _fileio
+   extern mount, find, next, read, size, sec, sxc, FError
+
+   ifdef DEBUG_PRINT
+     extern szError
+   endif
+ endif
+
+
 #define buffer      0x2000  ; -20ff
 #define buffer1     0x2100  ; -21ff
 #define buffer2     0x2200  ; -22ff

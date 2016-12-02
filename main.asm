@@ -9,8 +9,6 @@
 #include "fileio.inc"
 #include "serial.inc"
 
- extern mount, find, next, read, size, sec, sxc, szError, FError
-
 
 .audio_shr    UDATA_SHR
 curBuf      res     1   ; current buffer playing
@@ -19,10 +17,12 @@ EmptyFlag   res     1   ; 1 = need refilling
 count       res     1   ;
 
 
+;-------------------------------------------------------------
 .reset    CODE 0
 reset_vector
     goto    main
 
+;-------------------------------------------------------------
 .interrupt    CODE 4
 interrupt_vector
     banksel PIR4

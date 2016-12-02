@@ -1,13 +1,18 @@
 ;
 ;  fileio.asm
 ;
-#include "main.inc"
+#define _fileio
 
+#include "main.inc"
 #include sdmmc.inc
 #include fileio.inc
 
 ; from fileio
-    global  mount, find, read, next, size, sec, sxc, szError, FError
+    global  mount, find, read, next, size, sec, sxc, FError
+
+ ifdef DEBUG_PRINT
+    global szError
+ endif
 
 .fileio     udata 0x520     ; 0x2320 in linear memory
 temp	    res	    1
