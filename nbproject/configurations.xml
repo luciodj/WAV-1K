@@ -10,6 +10,7 @@
       <itemPath>serial.inc</itemPath>
       <itemPath>pwm.inc</itemPath>
       <itemPath>SDMMC.inc</itemPath>
+      <itemPath>fileio.inc</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -23,6 +24,7 @@
       <itemPath>serial.asm</itemPath>
       <itemPath>pwm.asm</itemPath>
       <itemPath>sdmmc.asm</itemPath>
+      <itemPath>fileio.asm</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
