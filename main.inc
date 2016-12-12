@@ -1,3 +1,6 @@
+;
+; main.inc
+;
 #include "p16f18855.inc"
 
 ; PIC16F18855 XPRESS Evaluation board pin assignments

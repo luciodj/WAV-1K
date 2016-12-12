@@ -1,5 +1,5 @@
 ;
-; serial port
+; serial.asm
 ;
 #include "main.inc"
 #include "sdmmc.inc"

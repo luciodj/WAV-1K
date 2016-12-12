@@ -1,9 +1,9 @@
-    ;
-    ; SDMMC.inc
-    ;
+;
+; SDMMC.inc
+;
     extern  LBA, SD_MEDIAinit, SD_SECTORread
 
-    ; FILEIO ERROR CODES
+; FILEIO ERROR CODES
 #define FE_IDE_ERROR        1   ; IDE command execution error
 #define FE_NOT_PRESENT      2   ; CARD not present
 #define FE_PARTITION_TYPE   3   ; WRONG partition type

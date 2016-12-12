@@ -1,6 +1,6 @@
-    ;
-    ;
-    ;
+;
+; pwm.asm
+;
 #include "main.inc"
 
     GLOBAL  PWM_init

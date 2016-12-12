@@ -1,8 +1,7 @@
-    ;
-    ; SDMMC.asm
-    ;
+;
+; sdmmc.asm
+;
 #include "main.inc"
-;#include "serial.inc"
 
     GLOBAL  SD_MEDIAinit, SD_SECTORread, LBA
 

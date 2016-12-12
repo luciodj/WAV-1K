@@ -1,16 +1,19 @@
+;
+; delay.asm
+;
 #include "p16f18855.inc"
-    
+
     GLOBAL delay_10ms
-    
-_delay    IDATA 
+
+_delay    IDATA
 _delay10ms	res 1
 _delayms_inner	res 1
 _delayms_outer	res 1
 
 delay    CODE
 ;---------------------------------------------------------------
-delay_10ms    
-; input W : x10 ms delay   
+delay_10ms
+; input W : x10 ms delay
 	banksel	_delay10ms
 	movwf	_delay10ms
 tenms_loop
@@ -23,7 +26,7 @@ delayms_outerL
 delayms_innerL
 	nop			; 1
 	nop			; 2
-	nop			; 3 
+	nop			; 3
 	nop			; 4
 	nop			; 5
 	decfsz	_delayms_inner	; 6
@@ -31,10 +34,10 @@ delayms_innerL
 
 	decfsz	_delayms_outer
 	goto	delayms_outerL
-	
+
 	decfsz  _delay10ms
 	goto	tenms_loop
 	return
-	
+
     END
 
